@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAM Space Industries — RAMSORG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #040609;
+  --deep: #070c12;
+  --navy: #0a1220;
+  --panel: #0d1825;
+  --panel2: #111e2e;
+  --border: rgba(0,180,255,0.12);
+  --border-bright: rgba(0,180,255,0.35);
+  --cyan: #00b4ff;
+  --cyan-dim: rgba(0,180,255,0.6);
+  --cyan-glow: rgba(0,180,255,0.15);
+  --gold: #c8922a;
+  --gold-dim: rgba(200,146,42,0.6);
+  --gold-glow: rgba(200,146,42,0.1);
+  --text: #b8cde0;
+  --text-dim: #5a7a96;
+  --text-bright: #e8f4ff;
+  --red: #ff3a3a;
+  --green: #00e5a0;
+  --shield: #ff4444;
+  --haul: #00e5a0;
+  --scout: #00b4ff;
+  --forge: #ff8c00;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 400;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* STAR FIELD */
+#stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+#stars canvas { width: 100%; height: 100%; }
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 64px;
+  background: rgba(4,6,9,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.nav-logo-mark {
+  width: 36px; height: 36px;
+  border: 1.5px solid var(--cyan);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 12px var(--cyan-glow), inset 0 0 8px var(--cyan-glow);
+}
+.nav-logo-text {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-bright);
+  letter-spacing: 0.18em;
+  line-height: 1.3;
+}
+.nav-logo-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--cyan-dim);
+  letter-spacing: 0.25em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0; right: 0;
+  height: 1px;
+  background: var(--cyan);
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+.nav-links a:hover { color: var(--cyan); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+.nav-join {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--gold) !important;
+  border: 1px solid var(--gold-dim) !important;
+  padding: 6px 16px;
+  border-radius: 2px;
+}
+.nav-join:hover { color: #fff !important; background: var(--gold-glow); }
+.nav-join::after { display: none !important; }
+
+/* HERO */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 40px 80px;
+}
+
+.hero-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  color: var(--cyan-dim);
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.3s forwards;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,180,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 6px 18px;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s forwards;
+}
+.hero-badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse 2s infinite;
+}
+.hero-badge-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.2em;
+}
+
+.hero h1 {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(38px, 7vw, 88px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: var(--text-bright);
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+.hero h1 span { color: var(--cyan); }
+
+.hero-sub {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(14px, 2.5vw, 22px);
+  font-weight: 400;
+  letter-spacing: 0.35em;
+  color: var(--gold);
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+}
+
+.hero-motto {
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+  font-style: italic;
+  margin-bottom: 56px;
+  opacity: 0;
+  animation: fadeUp 0.8s 1s forwards;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.2s forwards;
+}
+
+.btn-primary {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--black);
+  background: var(--cyan);
+  border: none;
+  padding: 14px 36px;
+  border-radius: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 0 24px rgba(0,180,255,0.3);
+}
+.btn-primary:hover { background: #33c8ff; box-shadow: 0 0 40px rgba(0,180,255,0.5); transform: translateY(-1px); }
+
+.btn-secondary {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--border-bright);
+  padding: 14px 36px;
+  border-radius: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { color: var(--cyan); border-color: var(--cyan); background: var(--cyan-glow); transform: translateY(-1px); }
+
+.hero-scroll {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.8s forwards;
+}
+.scroll-line {
+  width: 1px; height: 48px;
+  background: linear-gradient(to bottom, transparent, var(--cyan-dim));
+  animation: scrollPulse 2s infinite;
+}
+.scroll-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--text-dim);
+}
+
+/* SECTION COMMON */
+.section {
+  position: relative;
+  z-index: 1;
+  padding: 100px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-full {
+  position: relative;
+  z-index: 1;
+  padding: 100px 0;
+}
+
+.section-header {
+  margin-bottom: 64px;
+}
+
+.section-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.45em;
+  color: var(--cyan-dim);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-eyebrow::before {
+  content: '';
+  width: 32px; height: 1px;
+  background: var(--cyan-dim);
+}
+
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(26px, 4vw, 48px);
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+}
+.section-title span { color: var(--cyan); }
+
+.section-desc {
+  margin-top: 16px;
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--text-dim);
+  max-width: 560px;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+}
+
+/* DIVIDER */
+.divider {
+  position: relative;
+  z-index: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-bright), transparent);
+  margin: 0 40px;
+}
+
+/* STATS BAR */
+.stats-bar {
+  position: relative;
+  z-index: 1;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  flex-wrap: wrap;
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--cyan);
+  display: block;
+  letter-spacing: 0.05em;
+}
+.stat-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* ACADEMY SECTION */
+.academy-bg {
+  background: linear-gradient(180deg, var(--black) 0%, var(--deep) 50%, var(--black) 100%);
+}
+
+/* ACADEMY STAGES */
+.stages-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  margin-bottom: 80px;
+}
+
+.stage-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 36px 28px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.stage-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--cyan);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+.stage-card:hover { background: var(--panel2); border-color: var(--border-bright); }
+.stage-card:hover::before { transform: scaleX(1); }
+
+.stage-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 48px;
+  font-weight: 900;
+  color: rgba(0,180,255,0.08);
+  line-height: 1;
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+}
+.stage-icon {
+  width: 40px; height: 40px;
+  border: 1px solid var(--border-bright);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+  background: var(--cyan-glow);
+}
+.stage-icon svg { width: 20px; height: 20px; stroke: var(--cyan); fill: none; stroke-width: 1.5; }
+
+.stage-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: 0.15em;
+  margin-bottom: 12px;
+}
+.stage-desc {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text-dim);
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+}
+.stage-tag {
+  margin-top: 20px;
+  display: inline-block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: var(--cyan-dim);
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: 2px;
+}
+
+/* DIVISION TRACKS */
+.div-tracks {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.div-track {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+.div-track:hover { border-color: var(--border-bright); transform: translateY(-2px); }
+
+.div-track-header {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.div-track-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.div-track-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--text-bright);
+}
+.div-track-sub {
+  margin-left: auto;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+}
+
+.div-track-body { padding: 24px 28px; }
+
+.div-course {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.div-course:last-child { border-bottom: none; }
+
+.course-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  min-width: 24px;
+  padding-top: 2px;
+}
+.course-info { flex: 1; }
+.course-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+.course-detail {
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+.course-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  padding: 2px 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* DIVISIONS SECTION */
+.divisions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3px;
+}
+
+.division-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 48px 40px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+.division-card::after {
+  content: attr(data-name);
+  position: absolute;
+  right: -20px; top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  font-family: 'Orbitron', monospace;
+  font-size: 80px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  opacity: 0.03;
+  pointer-events: none;
+  color: white;
+  white-space: nowrap;
+}
+.division-card:hover { background: var(--panel2); }
+
+.div-accent {
+  width: 48px; height: 4px;
+  border-radius: 2px;
+  margin-bottom: 28px;
+}
+.div-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--text-bright);
+  margin-bottom: 6px;
+}
+.div-full {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+.div-desc {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--text-dim);
+  line-height: 1.7;
+  margin-bottom: 28px;
+  letter-spacing: 0.03em;
+}
+.div-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.role-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 2px;
+}
+
+/* JOIN SECTION */
+.join-section {
+  position: relative;
+  z-index: 1;
+  padding: 120px 40px;
+  text-align: center;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.join-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(0,180,255,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.join-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(28px, 5vw, 56px);
+  font-weight: 900;
+  color: var(--text-bright);
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+.join-title span { color: var(--cyan); }
+
+.join-desc {
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--text-dim);
+  max-width: 500px;
+  margin: 0 auto 48px;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+}
+
+.join-steps {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 56px;
+  flex-wrap: wrap;
+}
+.join-step {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.join-step-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 32px;
+}
+.join-step-num {
+  width: 44px; height: 44px;
+  border: 1px solid var(--border-bright);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Orbitron', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--cyan);
+}
+.join-step-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-align: center;
+  max-width: 100px;
+}
+.join-connector {
+  width: 60px; height: 1px;
+  background: var(--border);
+}
+
+/* FOOTER */
+footer {
+  position: relative;
+  z-index: 1;
+  padding: 48px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.footer-brand {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+}
+.footer-links {
+  display: flex;
+  gap: 24px;
+}
+.footer-links a {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--cyan); }
+.footer-copy {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* SCANLINE OVERLAY */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+}
+
+/* GRID OVERLAY on hero */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 80px 80px;
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, transparent 70%);
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, transparent 70%);
+}
+
+/* CORNER DECORATIONS */
+.corner-decor {
+  position: relative;
+}
+.corner-decor::before, .corner-decor::after {
+  content: '';
+  position: absolute;
+  width: 12px; height: 12px;
+  border-color: var(--cyan-dim);
+  border-style: solid;
+}
+.corner-decor::before { top: 0; left: 0; border-width: 1px 0 0 1px; }
+.corner-decor::after { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+
+/* Mobile */
+@media (max-width: 768px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero { padding: 100px 20px 60px; }
+  .section { padding: 70px 20px; }
+  .stages-grid { grid-template-columns: 1fr 1fr; }
+  .div-tracks { grid-template-columns: 1fr; }
+  .divisions-grid { grid-template-columns: 1fr; }
+  .stats-bar { gap: 40px; padding: 32px 20px; }
+  footer { flex-direction: column; align-items: flex-start; }
+  .join-steps { flex-direction: column; align-items: center; }
+  .join-connector { width: 1px; height: 30px; }
+}
+</style>
+</head>
+<body>
+
+<!-- STAR FIELD -->
+<div id="stars"><canvas id="starCanvas"></canvas></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark">RAM</div>
+    <div>
+      <div class="nav-logo-text">SPACE INDUSTRIES</div>
+      <div class="nav-logo-sub">RAMSORG</div>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#academy">Academy</a></li>
+    <li><a href="#divisions">Divisions</a></li>
+    <li><a href="#join" class="nav-join">Enlist</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-eyebrow">// RAMSORG — ACTIVE OPERATIONS</div>
+  <div class="hero-badge">
+    <div class="hero-badge-dot"></div>
+    <span class="hero-badge-text">RECRUITING NOW</span>
+  </div>
+  <h1>RAM <span>SPACE</span><br>INDUSTRIES</h1>
+  <div class="hero-sub">RAMSORG</div>
+  <div class="hero-motto">"No limit to what we can accomplish."</div>
+  <div class="hero-ctas">
+    <a href="#academy" class="btn-primary">Second Fleet Academy</a>
+    <a href="#join" class="btn-secondary">Join the Org</a>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <div class="scroll-label">SCROLL</div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num">4</span>
+    <div class="stat-label">DIVISIONS</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">9</span>
+    <div class="stat-label">RANK TIERS</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">2950s</span>
+    <div class="stat-label">FOUNDED</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">∞</span>
+    <div class="stat-label">THE LIMIT</div>
+  </div>
+</div>
+
+<!-- ACADEMY SECTION -->
+<section id="academy" class="academy-bg">
+  <div class="section">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">TRAINING PROGRAM</div>
+      <div class="section-title">Second Fleet<br><span>Academy</span></div>
+      <p class="section-desc">The founding crew learned everything through trial and fire. The Academy exists so you don't have to. Every recruit who walks in walks out mission-ready.</p>
+    </div>
+
+    <!-- 4 STAGES -->
+    <div class="stages-grid">
+
+      <div class="stage-card reveal">
+        <div class="stage-num">01</div>
+        <div class="stage-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+        </div>
+        <div class="stage-title">ORIENTATION</div>
+        <div class="stage-desc">Org structure, ranks, divisions, rules of conduct, Discord setup, and how Standing Points work. Delivered via #academy-orientation or a live session with a Lieutenant.</div>
+        <div class="stage-tag">REQUIRED — ALL RECRUITS</div>
+      </div>
+
+      <div class="stage-card reveal">
+        <div class="stage-num">02</div>
+        <div class="stage-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="stage-title">DIVISION FOUNDATIONS</div>
+        <div class="stage-desc">Division-specific training covering core skills, callouts, protocols, and your first real missions. Choose your lane: SHIELD, HAUL, SCOUT, or FORGE.</div>
+        <div class="stage-tag">DIVISION-SPECIFIC</div>
+      </div>
+
+      <div class="stage-card reveal">
+        <div class="stage-num">03</div>
+        <div class="stage-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <div class="stage-title">LIVE OPS QUAL</div>
+        <div class="stage-desc">Join a live operation as support crew alongside a Specialist mentor. Real missions, real stakes. Your mentor files your readiness report in #academy-graduation-log.</div>
+        <div class="stage-tag">LIVE SESSION</div>
+      </div>
+
+      <div class="stage-card reveal">
+        <div class="stage-num">04</div>
+        <div class="stage-icon">
+          <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="stage-title">GRADUATION</div>
+        <div class="stage-desc">Your Division Head officially promotes you to Crew Member. Standing Points applied. Name posted in #academy-graduation-log. You are now part of the Second Fleet.</div>
+        <div class="stage-tag">MILESTONE</div>
+      </div>
+
+    </div>
+
+    <!-- DIVISION TRACKS -->
+    <div class="section-header reveal" style="margin-top: 80px;">
+      <div class="section-eyebrow">SPECIALIZATION</div>
+      <div class="section-title">Division <span>Tracks</span></div>
+      <p class="section-desc">After orientation, every recruit chooses their path. Each division has its own foundations curriculum and advanced certification track.</p>
+    </div>
+
+    <div class="div-tracks">
+
+      <!-- SHIELD -->
+      <div class="div-track reveal">
+        <div class="div-track-header">
+          <div class="div-track-dot" style="background: var(--shield); box-shadow: 0 0 8px var(--shield);"></div>
+          <div class="div-track-name">SHIELD</div>
+          <div class="div-track-sub">SECURITY & COMBAT</div>
+        </div>
+        <div class="div-track-body">
+          <div class="div-course">
+            <div class="course-num">01</div>
+            <div class="course-info">
+              <div class="course-name">Flight Fundamentals</div>
+              <div class="course-detail">Basic maneuvering, decoupled flight, emergency evasion</div>
+            </div>
+            <div class="course-badge" style="background: rgba(255,68,68,0.1); color: var(--shield); border: 1px solid rgba(255,68,68,0.3);">CORE</div>
+          </div>
+          <div class="div-course">
+            <div class="course-num">02</div>
+            <div class="course-info">
+              <div class="course-name">Combat Callouts & ROE</div>
+              <div class="course-detail">Engagement protocol, target calling, rules of engagement</div>
+            </div>
+            <div class="course-badge" style="background: rgba(255,68,68,0.1); color: var(--shield); border: 1px solid rgba(255,68,68,0.3);">CORE</div>
+          </div>
+          <div class="div-course">
+            <div class="course-num">03</div>
+            <div class="course-info">
+              <div class="course-name">Escort Operations</div>
+              <div class="course-detail">Formation flying, threat assessment, convoy protection</div>
+            </div>
+            <div class="course-badge" style="background: rgba(255,68,68,0.1); color: var(--shield); border: 1px solid rgba(255,68,68,0.3);">CORE</div>
+          </div>
+          <div class="div-course">
+            <div class="course-num">★</div>
+            <div class="course-info">
+              <div class="course-name">Ace Certification</div>
+              <div class="course-detail">Win 3 combat drills — earns Specialist track eligibility</div>
+            </div>
+            <div class="course-badge" style="background: rgba(200,146,42,0.1); color: var(--gold); border: 1px solid rgba(200,146,42,0.3);">CERT</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HAUL -->
+      <div class="div-track reveal">
+        <div class="div-track-header">
+          <div class="div-track-dot" style="background: var(--haul); box-shadow: 0 0 8px var(--haul);"></div>
+          <div class="div-track-name">HAUL</div>
+          <div class="div-track-sub">LOGISTICS & CARGO</div>
+        </div>
+        <div class="div-track-body">
+          <div class="div-course">
+            <div class="course-num">01</div>
+            <div class="course-info">
+              <div class="course-name">Cargo Fundamentals</div>
+              <div class="course-detail">Loading protocols, commodity routing, Trade tools</div>
+            </div>
+            <div class="course-badge" style="background: rgba(0,229,160,0.1); color: var(--haul); border: 1px solid rgba(0,229,160,0.3);">CORE</div>
+          </div>
+          <div class="div-course">
+            <div class="course-num">02</div>
+            <div class="course-info">
+              <div class="course-name">Convoy Protocol</div>
+              <div class="course-detail">Formation spacing, distress procedures, escort coordination</div>
+            </div>
+            <div class="course-badge" style="background: rgba(0,229,160,0.1); color: var(--haul); border: 1px solid rgba(0,229,160,0.3);">CORE</div>
+          </div>
+          <div class="div-course">
+            <div class="course-num">03</div>
+            <div class="course-info">
+              <div class="course-name">Trade Route Analysis</div>
+              <div class="course-detail">Profit margins, risk assessment, refueling stop planning</div>
+            </div>
+            <div class="course-badge" style="background: rgba(0,229,160,0.1); color: var(--haul); border: 1px solid rgba(0,229,160,0.3);">CORE</div>
+          </div>
+          <div class="div-course">
+            <div class="course-num">★</div>
+            <div class="course-info">
+              <div class="course-name">Trade Master Certification</div>
+              <div class="course-detail">Lead 3 convoys — earns Convoy Lead role</div>
+            </div>
+            <div class="course-badge" style="background: rgba(200,146,42,0.1); color: var(--gold); border: 1px solid rgba(200,146,42,0.3);">CERT</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCOUT -->
+      <div class="div-track reveal">
+        <div class="div-track-header">
+          <div class="div-track-dot" style="background: var(--scout); box-shadow: 0 0 8px var(--scout);"></div>
+          <div class="div-track-name">SCOUT</div>
+          <div class="div-track-sub">EXPLORATION & RECON</div>
+        </div>
+        <div class="div-track-body">
+          <div class="div-course">
+            <div class="course-num">01</div>
+            <div class="course-info">
+              <div class="course-name">Navigation & Radar</div>
+              <div class="course-detail">Quantum travel, radar use, jump point identification</div>
+            </div>
+            <div class="course-badge" style="background: rgba(0,180,255,0.1); color: var(--scout); border: 1px solid rgba(0,180,255,0.3);">CORE</div>
+          </div>
+          <div class="div-course">
+            <div class="course-num">02</div>
+            <div class="course-info">
+              <div class="course-name">Recon Reporting</div>
+              <div class="course-detail">Threat assessment, survey format, intel relay to fleet</div>
+            </div>
+            <div class="course-badge" style="background: rgba(0,180,255,0.1); color: var(--scout); border: 1px solid rgba(0,180,255,0.3);">CORE</div>
+          </div>
+          <div class="div-course">
+            <div class="course-num">03</div>
+            <div class="course-info">
+              <div class="course-name">Deep Space Safety</div>
+              <div class="course-detail">Solo survival, salvage basics, emergency QT procedures</div>
+            </div>
+            <div class="course-badge" style="background: rgba(0,180,255,0.1); color: var(--scout); border: 1px solid rgba(0,180,255,0.3);">CORE</div>
+          </div>
+          <div class="div-course">
+            <div class="course-num">★</div>
+            <div class="course-info">
+              <div class="course-name">Pathfinder Certification</div>
+              <div class="course-detail">Chart 3 solo surveys & file reports — earns Recon Lead</div>
+            </div>
+            <div class="course-badge" style="background: rgba(200,146,42,0.1); color: var(--gold); border: 1px solid rgba(200,146,42,0.3);">CERT</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORGE -->
+      <div class="div-track reveal">
+        <div class="div-track-header">
+          <div class="div-track-dot" style="background: var(--forge); box-shadow: 0 0 8px var(--forge);"></div>
+          <div class="div-track-name">FORGE</div>
+          <div class="div-track-sub">ENGINEERING & INDUSTRY</div>
+        </div>
+        <div class="div-track-body">
+          <div class="div-course">
+            <div class="course-num">01</div>
+            <div class="course-info">
+              <div class="course-name">Mining Basics</div>
+              <div class="course-detail">Rock scanning, charge sizing, ore extraction and transfer</div>
+            </div>
+            <div class="course-badge" style="background: rgba(255,140,0,0.1); color: var(--forge); border: 1px solid rgba(255,140,0,0.3);">CORE</div>
+          </div>
+          <div class="div-course">
+            <div class="course-num">02</div>
+            <div class="course-info">
+              <div class="course-name">Ship Repair & EVA</div>
+              <div class="course-detail">Hull repair priority, component swap, EVA safety protocol</div>
+            </div>
+            <div class="course-badge" style="background: rgba(255,140,0,0.1); color: var(--forge); border: 1px solid rgba(255,140,0,0.3);">CORE</div>
+          </div>
+          <div class="div-course">
+            <div class="course-num">03</div>
+            <div class="course-info">
+              <div class="course-name">Fleet Support Operations</div>
+              <div class="course-detail">In-field repair coordination, refueling ops, MOLE crew roles</div>
+            </div>
+            <div class="course-badge" style="background: rgba(255,140,0,0.1); color: var(--forge); border: 1px solid rgba(255,140,0,0.3);">CORE</div>
+          </div>
+          <div class="div-course">
+            <div class="course-num">★</div>
+            <div class="course-info">
+              <div class="course-name">Master Engineer Certification</div>
+              <div class="course-detail">3 mining ops + 1 live ship repair — earns Repair Crew Lead</div>
+            </div>
+            <div class="course-badge" style="background: rgba(200,146,42,0.1); color: var(--gold); border: 1px solid rgba(200,146,42,0.3);">CERT</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DIVISIONS SECTION -->
+<section id="divisions">
+  <div class="section">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">OPERATIONAL STRUCTURE</div>
+      <div class="section-title">Choose Your <span>Division</span></div>
+      <p class="section-desc">Four divisions. Every one essential. Pick the role that fits how you fly, then own it.</p>
+    </div>
+  </div>
+
+  <div class="divisions-grid" style="max-width:1200px;margin:0 auto;padding:0 40px;">
+
+    <div class="division-card reveal" data-name="SHIELD">
+      <div class="div-accent" style="background: var(--shield);"></div>
+      <div class="div-name">SHIELD</div>
+      <div class="div-full">SECURITY & COMBAT DIVISION</div>
+      <div class="div-desc">The fighting force of RAMSORG. Escorts, bounty operations, combat defense, and PvP response. When the org comes under fire, SHIELD answers.</div>
+      <div class="div-roles">
+        <span class="role-tag">FIGHTER PILOT</span>
+        <span class="role-tag">GUNNER</span>
+        <span class="role-tag">MARINE</span>
+        <span class="role-tag">MEDIC</span>
+      </div>
+    </div>
+
+    <div class="division-card reveal" data-name="HAUL">
+      <div class="div-accent" style="background: var(--haul);"></div>
+      <div class="div-name">HAUL</div>
+      <div class="div-full">LOGISTICS & CARGO DIVISION</div>
+      <div class="div-desc">The economic engine. Cargo contracts, freight convoys, refueling operations, and trade analysis. HAUL funds the fleet.</div>
+      <div class="div-roles">
+        <span class="role-tag">CARGO PILOT</span>
+        <span class="role-tag">REFUELER</span>
+        <span class="role-tag">TRADE ANALYST</span>
+        <span class="role-tag">CONVOY LEAD</span>
+      </div>
+    </div>
+
+    <div class="division-card reveal" data-name="SCOUT">
+      <div class="div-accent" style="background: var(--scout);"></div>
+      <div class="div-name">SCOUT</div>
+      <div class="div-full">EXPLORATION & RECON DIVISION</div>
+      <div class="div-desc">The eyes of the org. System surveys, jump point mapping, salvage sweeps, and intelligence gathering. SCOUT goes where no one else does.</div>
+      <div class="div-roles">
+        <span class="role-tag">EXPLORER</span>
+        <span class="role-tag">SALVAGER</span>
+        <span class="role-tag">DATA RUNNER</span>
+        <span class="role-tag">PATHFINDER</span>
+      </div>
+    </div>
+
+    <div class="division-card reveal" data-name="FORGE">
+      <div class="div-accent" style="background: var(--forge);"></div>
+      <div class="div-name">FORGE</div>
+      <div class="div-full">ENGINEERING & INDUSTRY DIVISION</div>
+      <div class="div-desc">Keeps the org operational. Mining, ship repair, base construction, and industrial operations. No FORGE, no fleet.</div>
+      <div class="div-roles">
+        <span class="role-tag">MINER</span>
+        <span class="role-tag">ENGINEER</span>
+        <span class="role-tag">BASE BUILDER</span>
+        <span class="role-tag">REPAIR SPECIALIST</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- JOIN SECTION -->
+<section id="join" class="join-section">
+  <div class="reveal">
+    <div class="section-eyebrow" style="justify-content:center; margin-bottom:24px;">
+      <span>// ENLISTMENT</span>
+    </div>
+    <div class="join-title">Ready to Join the<br><span>Second Fleet?</span></div>
+    <div class="join-desc">Three steps between you and your first Fleet Op. No experience required — just show up and we'll teach you the rest.</div>
+
+    <div class="join-steps">
+      <div class="join-step">
+        <div class="join-step-inner">
+          <div class="join-step-num">01</div>
+          <div class="join-step-label">Apply on RSI Org Page</div>
+        </div>
+      </div>
+      <div class="join-connector"></div>
+      <div class="join-step">
+        <div class="join-step-inner">
+          <div class="join-step-num">02</div>
+          <div class="join-step-label">Join the Discord</div>
+        </div>
+      </div>
+      <div class="join-connector"></div>
+      <div class="join-step">
+        <div class="join-step-inner">
+          <div class="join-step-num">03</div>
+          <div class="join-step-label">Complete Academy Orientation</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+      <a href="https://robertsspaceindustries.com/en/orgs/RAMSORG" target="_blank" class="btn-primary">Apply on RSI</a>
+      <a href="https://discord.gg/Xhaj3nRAEp" target="_blank" class="btn-secondary">Join Discord</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">RAM SPACE INDUSTRIES — RAMSORG</div>
+  <div class="footer-links">
+    <a href="https://robertsspaceindustries.com/en/orgs/RAMSORG" target="_blank">RSI ORG PAGE</a>
+    <a href="https://discord.gg/Xhaj3nRAEp" target="_blank">DISCORD</a>
+    <a href="https://robertsspaceindustries.com/spectrum/community/SC/forum/50177/thread/ram-space-industries-1" target="_blank">SPECTRUM</a>
+  </div>
+  <div class="footer-copy">STAR CITIZEN — RAM SPACE INDUSTRIES © 2950s UEE</div>
+</footer>
+
+<script>
+// STAR FIELD
+const canvas = document.getElementById('starCanvas');
+const ctx = canvas.getContext('2d');
+let stars = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function initStars() {
+  stars = [];
+  for (let i = 0; i < 280; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.2 + 0.2,
+      a: Math.random(),
+      speed: Math.random() * 0.003 + 0.001,
+      twinkle: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function drawStars() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const t = Date.now() * 0.001;
+  stars.forEach(s => {
+    s.twinkle += s.speed;
+    const alpha = s.a * (0.5 + 0.5 * Math.sin(s.twinkle));
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(180,220,255,${alpha})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+
+resize();
+initStars();
+drawStars();
+window.addEventListener('resize', () => { resize(); initStars(); });
+
+// SCROLL REVEAL
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), 80);
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(r => observer.observe(r));
+
+// STAGGER reveals in grids
+document.querySelectorAll('.stages-grid .stage-card, .div-tracks .div-track, .divisions-grid .division-card').forEach((el, i) => {
+  el.style.transitionDelay = `${(i % 4) * 80}ms`;
+});
+</script>
+</body>
+</html>
