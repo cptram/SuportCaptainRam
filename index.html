@@ -989,7 +989,7 @@ footer {
     <li><a href="#ranks">Ranks</a></li>
     <li><a onclick="goToAcademy()" class="nav-cta" style="cursor:pointer;">Academy</a></li>
     <li><a href="https://discord.gg/Xhaj3nRAEp" target="_blank" class="nav-cta">Join Discord</a></li>
-    <li><a onclick="goToAdmin()" class="nav-cta" style="cursor:pointer;border-color:rgba(232,64,64,0.4);color:#e84040;" onmouseover="this.style.background='#e84040';this.style.color='#04070f'" onmouseout="this.style.background='transparent';this.style.color='#e84040'">⬡ Admin</a></li>
+    <li><a id="admin-nav-btn" onclick="goToAdmin()" class="nav-cta" style="display:none;cursor:pointer;border-color:rgba(232,64,64,0.4);color:#e84040;" onmouseover="this.style.background='#e84040';this.style.color='#04070f'" onmouseout="this.style.background='transparent';this.style.color='#e84040'">⬡ Admin</a></li>
   </ul>
 </nav>
 
@@ -1742,6 +1742,24 @@ function updateCallsignDisplay(callsign) {
 }
 
 // ════════════════════════════════════════
+// ── SECRET KEY COMBO: type A D M to reveal admin button ──
+(function() {
+  const seq = ['a','d','m'];
+  let pos = 0;
+  document.addEventListener('keydown', function(e) {
+    if (e.key.toLowerCase() === seq[pos]) {
+      pos++;
+      if (pos === seq.length) {
+        const btn = document.getElementById('admin-nav-btn');
+        if (btn) btn.style.display = 'inline-block';
+        pos = 0;
+      }
+    } else {
+      pos = e.key.toLowerCase() === seq[0] ? 1 : 0;
+    }
+  });
+})();
+
 // MAIN SITE — scroll reveal + connector
 // ════════════════════════════════════════
 const reveals = document.querySelectorAll('.reveal');
