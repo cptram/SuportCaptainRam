@@ -1697,28 +1697,77 @@ function removeAnnouncement(i) {
 
 // ── ACADEMY PROGRESS ──
 function renderAdminAcademy() {
-  const members = getAdminData('members', []);
   const el = document.getElementById('admin-academy-list');
   if (!el) return;
-  // Also check enrolled callsign from the public side
   const enrolled = localStorage.getItem('ram_callsign');
   const checks = JSON.parse(localStorage.getItem('ram_checks') || '[]');
   const mods = JSON.parse(localStorage.getItem('ram_mods') || '[]');
   const div = localStorage.getItem('ram_div') || '—';
-  let rows = '';
-  if (enrolled) {
-    const pct = Math.round((checks.length / 9) * 100);
-    rows += `<div class="admin-row">
+  const graduated = localStorage.getItem('ram_graduated') === 'true';
+
+  if (!enrolled) {
+    el.innerHTML = '<div class="admin-empty">No cadets have enrolled yet.</div>';
+    return;
+  }
+
+  const pct = Math.round((checks.length / 9) * 100);
+  const allDone = checks.length >= 9 && mods.length >= 6;
+  const progressColour = pct === 100 ? '#1fc8a0' : pct >= 50 ? '#00c8ff' : '#e84040';
+
+  el.innerHTML = `
+    <div class="admin-row" style="border-color:${allDone && !graduated ? 'rgba(31,200,160,0.4)' : graduated ? 'rgba(0,200,255,0.3)' : '#1e3a5f'};">
       <div class="admin-row-main">
-        <div class="admin-row-name">${enrolled} <span style="font-size:11px;color:#5a8aaa;font-family:'Share Tech Mono',monospace;">(active session)</span></div>
-        <div class="admin-row-meta">Division: <span style="color:#00c8ff">${div}</span> · Modules: ${mods.length}/6 · Checklist: ${checks.length}/9 · Progress: ${pct}%</div>
-        <div class="admin-progress-bar-wrap"><div class="admin-progress-bar-fill" style="width:${pct}%"></div></div>
+        <div class="admin-row-name">${enrolled}
+          ${graduated ? '<span style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:#1fc8a0;border:1px solid rgba(31,200,160,0.4);padding:2px 8px;margin-left:10px;letter-spacing:0.1em;">✓ GRADUATED</span>' : '<span style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:#5a8aaa;padding:2px 8px;margin-left:6px;">CADET</span>'}
+        </div>
+        <div class="admin-row-meta" style="margin-top:6px;">
+          Division: <span style="color:#00c8ff">${div}</span>
+          &nbsp;·&nbsp; Modules: <span style="color:${mods.length>=6?'#1fc8a0':'#8ab8d8'}">${mods.length}/6</span>
+          &nbsp;·&nbsp; Checklist: <span style="color:${checks.length>=9?'#1fc8a0':'#8ab8d8'}">${checks.length}/9</span>
+          &nbsp;·&nbsp; Progress: <span style="color:${progressColour}">${pct}%</span>
+        </div>
+        <div class="admin-progress-bar-wrap" style="margin-top:10px;">
+          <div class="admin-progress-bar-fill" style="width:${pct}%;background:${progressColour};box-shadow:0 0 8px ${progressColour}44;"></div>
+        </div>
+        ${allDone && !graduated ? '<div style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:#1fc8a0;letter-spacing:0.1em;margin-top:10px;">⬡ ALL STAGES COMPLETE — READY FOR GRADUATION</div>' : ''}
+        ${graduated ? '<div style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:#5a8aaa;letter-spacing:0.1em;margin-top:10px;">Promoted to Crew Member. Graduation logged.</div>' : ''}
+      </div>
+      <div class="admin-row-actions" style="align-self:center;">
+        ${!graduated && allDone ? `<button class="admin-btn-sm" onclick="graduateCadet()" style="color:#1fc8a0;border-color:rgba(31,200,160,0.4);background:rgba(31,200,160,0.08);font-size:11px;padding:8px 16px;">⬡ Graduate</button>` : ''}
+        ${!graduated && !allDone ? `<div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#3a6080;letter-spacing:0.08em;text-align:right;">Not yet<br>eligible</div>` : ''}
       </div>
     </div>`;
-  }
-  if (!rows) { el.innerHTML = '<div class="admin-empty">No cadets have enrolled yet.</div>'; return; }
-  el.innerHTML = rows;
 }
+
+function graduateCadet() {
+  const callsign = localStorage.getItem('ram_callsign');
+  if (!callsign) return;
+  if (!confirm('Graduate ' + callsign + ' and promote to Crew Member?')) return;
+
+  // Mark graduated in localStorage
+  localStorage.setItem('ram_graduated', 'true');
+
+  // Also promote in the members roster if they exist there
+  const members = getAdminData('members', []);
+  const idx = members.findIndex(m => m.callsign === callsign);
+  if (idx !== -1) {
+    members[idx].rank = 'Crew Member';
+    setAdminData('members', members);
+  } else {
+    // Add them to the roster as Crew Member if not already there
+    const div = localStorage.getItem('ram_div') || 'UNASSIGNED';
+    members.push({ callsign, rank: 'Crew Member', division: div, sp: 5 });
+    setAdminData('members', members);
+  }
+
+  // Re-render both panels
+  renderAdminAcademy();
+  renderAdminMembers();
+
+  // Show confirmation
+  alert('✓ ' + callsign + ' has been graduated and promoted to Crew Member. Post their graduation in #academy-graduation-log on Discord.');
+}
+
 
 function enrollCadet() {
   const input = document.getElementById('callsign-input');
@@ -1890,8 +1939,21 @@ function updateGrad() {
   });
   const gl = document.getElementById('grad-locked');
   const gr = document.getElementById('grad-ready');
-  if (gl) gl.style.display = all ? 'none' : 'block';
-  if (gr) gr.style.display = all ? 'block' : 'none';
+  const graduated = localStorage.getItem('ram_graduated') === 'true';
+  if (graduated) {
+    // Show a special graduated state
+    if (gl) gl.style.display = 'none';
+    if (gr) {
+      gr.style.display = 'block';
+      const h3 = gr.querySelector('h3');
+      const p = gr.querySelector('p');
+      if (h3) h3.textContent = 'Congratulations, Crew Member.';
+      if (p) p.textContent = 'You have been officially graduated by the Admiral and promoted to Crew Member. Your name has been posted in #academy-graduation-log. Welcome to RAM Space Industries.';
+    }
+  } else {
+    if (gl) gl.style.display = all ? 'none' : 'block';
+    if (gr) gr.style.display = all ? 'block' : 'none';
+  }
 }
 
 // Init — only called once when academy page first opens
