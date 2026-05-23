@@ -374,7 +374,7 @@
   function closeLeaderboard(){document.getElementById('lbOverlay').classList.remove('show');document.body.style.overflow='';}
   function closeLbOutside(e){if(e.target===document.getElementById('lbOverlay'))closeLeaderboard();}
 
-  function selectAmount(btn,amt){document.querySelectorAll('.amount-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');selectedAmount=amt;document.getElementById('customAmt').value='';}
+  function selectAmount(btn,amt){document.querySelectorAll('.amount-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');selectedAmount=amt;document.getElementById('customAmt').value=amt;}
   function clearPresets(){document.querySelectorAll('.amount-btn').forEach(b=>b.classList.remove('active'));selectedAmount=null;}
   function buildVenmoUrl(){const amt=selectedAmount||parseFloat(document.getElementById('customAmt').value)||null;const note=encodeURIComponent(document.getElementById('msgBox').value||'Supporting Captain Ram!');let url='https://www.venmo.com/u/CptRam';if(amt)url+='?txn=pay&amount='+amt+'&note='+note;return url;}
   function handleDonate(){venmoUrl=buildVenmoUrl();document.getElementById('confirmOverlay').classList.add('show');startCountdown();}
