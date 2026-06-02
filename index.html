@@ -51,6 +51,12 @@
   .trophy-icon { font-size: 16px; }
   .admin-panel { display: none; max-width: 620px; margin: -36px auto 48px; background: rgba(255,100,0,0.05); border: 1px solid rgba(255,100,0,0.2); border-radius: 6px; padding: 20px 24px; }
   .admin-panel.visible { display: block; }
+  .pw-gate { display: none; max-width: 620px; margin: -36px auto 48px; background: rgba(255,100,0,0.05); border: 1px solid rgba(255,100,0,0.2); border-radius: 6px; padding: 20px 24px; }
+  .pw-gate.visible { display: block; }
+  .pw-hint { font-size: 10px; color: #ff6400; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .pw-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .pw-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,100,0,0.3); border-radius: 3px; color: #e0e8f0; font-family: 'Orbitron', monospace; font-size: 12px; padding: 8px 12px; width: 200px; outline: none; letter-spacing: 2px; }
+  .pw-error { font-size: 10px; color: #ff4444; letter-spacing: 2px; margin-top: 6px; display: none; }
   .admin-label { font-size: 11px; color: #ff6400; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
   .admin-section { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,100,0,0.15); }
   .admin-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
@@ -213,6 +219,16 @@
       <span class="trophy-icon">🏆</span>
       Top Supporters — Hall of Fame
     </button>
+  </div>
+
+  <!-- PASSWORD GATE -->
+  <div class="pw-gate" id="pwGate">
+    <div class="pw-hint">⚙ Admin Access — Enter Password</div>
+    <div class="pw-row">
+      <input class="pw-input" type="password" id="pwInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkPassword()"/>
+      <button class="admin-btn save-btn" onclick="checkPassword()">Unlock</button>
+    </div>
+    <div class="pw-error" id="pwError">✕ Wrong password</div>
   </div>
 
   <!-- ADMIN PANEL -->
@@ -530,9 +546,26 @@
     document.getElementById('countdown').textContent = 'Redirecting in 3...';
   };
 
+  // ── ADMIN PASSWORD GATE ───────────────────────────
+  // Change 'CaptainRam' below to whatever password you want
+  const ADMIN_PASSWORD = 'CaptainRam';
+
   if (window.location.search.includes('admin=1')) {
-    document.getElementById('adminPanel').classList.add('visible');
+    document.getElementById('pwGate').classList.add('visible');
   }
+
+  window.checkPassword = function() {
+    const input = document.getElementById('pwInput').value;
+    const errEl = document.getElementById('pwError');
+    if (input === ADMIN_PASSWORD) {
+      document.getElementById('pwGate').classList.remove('visible');
+      document.getElementById('adminPanel').classList.add('visible');
+      errEl.style.display = 'none';
+    } else {
+      errEl.style.display = 'block';
+      document.getElementById('pwInput').value = '';
+    }
+  };
 </script>
 </body>
 </html>
