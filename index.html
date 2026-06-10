@@ -387,7 +387,7 @@
 
     const pct = Math.min(100, (amount / price) * 100);
     document.getElementById('goalBar').style.width = pct + '%';
-    document.getElementById('goalCurrent').textContent = '$' + amount.toFixed(0);
+    document.getElementById('goalCurrent').textContent = '$' + (Number.isInteger(amount) ? amount.toFixed(0) : amount.toFixed(2));
     document.getElementById('goalPercent').textContent = Math.round(pct) + '% FUNDED';
 
     if (amount >= price) {
@@ -548,7 +548,7 @@
 
   // ── ADMIN PASSWORD GATE ───────────────────────────
   // Change 'CaptainRam' below to whatever password you want
-  const ADMIN_PASSWORD = 'CaptainRam';
+  const ADMIN_PASSWORD = 'captainram';
 
   if (window.location.search.includes('admin=1')) {
     document.getElementById('pwGate').classList.add('visible');
